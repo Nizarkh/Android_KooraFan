@@ -1,0 +1,74 @@
+package com.esprit.koorafan.adapters;
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.esprit.koorafan.R;
+import com.esprit.koorafan.database.AppDataBase;
+import com.esprit.koorafan.entity.Team;
+import java.util.List;
+
+public class TeamAdapter extends RecyclerView.Adapter<TeamAdapter.TeamViewHolder> {
+
+    private List<Team> teamList;
+    private Context mContext;
+
+    public TeamAdapter(List<Team> teamList, Context mContext) {
+        this.teamList = teamList;
+        this.mContext = mContext;
+    }
+
+    @NonNull
+    @Override
+    public TeamViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View rootView = LayoutInflater.from(mContext).inflate(R.layout.single_row_team, parent, false);
+        return new TeamViewHolder(rootView);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull TeamViewHolder holder, int position) {
+
+        Team singleItem = teamList.get(position);
+
+        holder.teamName.setText(singleItem.getTeamName());
+
+        holder.teamImg.setImageResource(singleItem.getImage());
+
+        holder.btnFav.setOnClickListener(view ->{
+            try{
+                AppDataBase.getInstance(mContext).teamDao().insertTeam(singleItem);
+            }catch(Exception exception) {
+                Toast.makeText(mContext, "Team exist!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+    @Override
+    public int getItemCount() {
+        return teamList.size();
+    }
+
+    class TeamViewHolder extends RecyclerView.ViewHolder {
+
+        private ImageView teamImg,btnFav;
+        private TextView teamName;
+
+        public TeamViewHolder(@NonNull View itemView) {
+            super(itemView);
+
+            teamName = itemView.findViewById(R.id.teamName);
+            teamImg = itemView.findViewById(R.id.teamImg);
+            btnFav = itemView.findViewById(R.id.btnFav);
+
+        }
+    }
+}
